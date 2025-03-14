@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Luas Bangun Datar</title>
+</head>
+<body>
+
+    <h2>Kalkulator Luas Bangun Datar</h2>
+
+    <div class="kalkulator">
+        <fieldset>
+            <legend>Persegi Panjang</legend>
+            <label>Panjang:</label>
+            <input type="number" id="panjang"><br>
+            <label>Lebar:</label>
+            <input type="number" id="lebar"><br>
+            <button onclick="hitungLuas('persegiPanjang')">Hitung</button>
+            <span id="hasilPersegiPanjang"></span>
+        </fieldset>
+
+        <fieldset>
+            <legend>Bujur Sangkar</legend>
+            <label>Sisi:</label>
+            <input type="number" id="sisi"><br>
+            <button onclick="hitungLuas('bujurSangkar')">Hitung</button>
+            <span id="hasilBujurSangkar"></span>
+        </fieldset>
+
+        <fieldset>
+            <legend>Segitiga</legend>
+            <label>Alas:</label>
+            <input type="number" id="alas"><br>
+            <label>Tinggi:</label>
+            <input type="number" id="tinggi"><br>
+            <button onclick="hitungLuas('segitiga')">Hitung</button>
+            <span id="hasilSegitiga"></span>
+        </fieldset>
+    </div>
+
+    <script src="penghitung.js"></script>
+</body>
+</html>
