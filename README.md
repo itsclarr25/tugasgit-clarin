@@ -1,2 +1,2 @@
 Nama : Clarinta Ghita Pradyan
-Asal Univ : Universitas Neger Surabaya
+|| Asal Univ : Universitas Neger Surabaya
