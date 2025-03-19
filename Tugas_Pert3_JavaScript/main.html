@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Pesanan</title>
+    <link rel="stylesheet" href="BuatTabel.css">
+</head>
+<body>
+    <h1>Manajemen Produk Toko Clarin</h1>
+    <div class="container">
+        <h2>Daftar Produk</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama</th>
+                    <th>Harga</th>
+                    <th>Stok</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="produk-body"></tbody>
+        </table>
+
+        <h2>Tambah Produk</h2>
+        <form id="form-produk">
+            <input type="text" id="nama" placeholder="Nama Produk" required>
+            <input type="number" id="harga" placeholder="Harga" required>
+            <input type="number" id="stok" placeholder="Stok" required>
+            <button type="submit">Tambah Produk</button>
+        </form>
+    </div>
+    <script src="LogicGaji.js"></script>
+</body>
+</html>
