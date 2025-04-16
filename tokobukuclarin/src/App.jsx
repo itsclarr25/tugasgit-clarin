@@ -4,6 +4,7 @@ import Home from "./components/home"
 import About from "./components/about"
 import Team from "./components/team"
 import Contact from "./components/contact"
+import Book from "./components/book"
 
 function App() { 
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/team" element={<Team />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/book" element={<Book />} />
       </Routes>
     </>
   )
