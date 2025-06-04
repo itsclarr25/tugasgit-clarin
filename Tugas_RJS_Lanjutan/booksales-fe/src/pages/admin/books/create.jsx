@@ -1,68 +1,90 @@
-import {Link, useNavigate} from "react-router-dom"
-import { useState, useEffect} from "react";
+import { useEffect, useState } from "react";
 import { getGenres } from "../../../_service/genres";
 import { getAuthors } from "../../../_service/author";
+import axios from "axios";
 import { createBook } from "../../../_service/books";
+import {useNavigate} from "react-router-dom";
 
 export default function BookCreate() {
-  const [authors, setAuthors] = useState([]);
   const [genres, setGenres] = useState([]);
+  const [authors, setAuthors] = useState([]);
   const [formData, setFormData] = useState({
-    title: "",
-    price: 0,
-    stock: 0,
-    genre_id: 0,
-    author_id: 0,
-    cover_photo: null,
-    description: "",
-  });
-
+    title:"",
+    price:0,
+    stock:0,
+    genre_id:0,
+    author_id:0,
+    cover: null,
+    description:"",
+  })
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetcData = async () => {
+      const [genresData, authorsData] = await Promise.all([
+        getGenres(),
+        getAuthors(),
+      ]);
+      setGenres(genresData);
+      setAuthors(authorsData);
+    }
+
+    fetcData();
+  }, [])
 
   const handleChange = (e) => {
     const {name, value, files} = e.target;
-    if (name === "cover_photo") {
+
+    if (name === "cover") {
       setFormData({
         ...formData,
-        cover_photo:files[0],
+        cover: files[0],
       });
     } else {
-      setFormData({
+      setFormData ({
         ...formData,
         [name]: value,
-      })
+      });
     }
-  }
+  };
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
   e.preventDefault();
+
   try {
     const payload = new FormData();
     for (const key in formData) {
       payload.append(key, formData[key]);
     }
 
-    await createBook(payload);
-    navigate("/admin/books")
-  } catch (error) {
-    console.log(error);
-    alert("Error creating book")
-  }
-}
+    // Debug: log semua data yang akan dikirim
+    console.log("Payload:");
+    for (let pair of payload.entries()) {
+      console.log(pair[0] + ": ", pair[1]);
+    }
 
-  useEffect(() => {
-      const fetchData = async () => {
-        const [auhtorsData, genresData] = await Promise.all([
-          getAuthors(),
-          getGenres(),
-        ])
-  
-        setAuthors(auhtorsData)
-        setGenres(genresData)
-      }
-  
-      fetchData()
-    }, [])
+    // Kirim request
+    const response = await createBook(payload);
+    console.log("Success:", response.data);
+
+    navigate("/admin/books");
+  } catch (error) {
+    // Debug detail error dari Axios
+    if (error.response) {
+      console.error("Server responded with error:");
+      console.error("Status:", error.response.status);
+      console.error("Data:", error.response.data);
+      alert("Error: " + JSON.stringify(error.response.data.message));
+    } else if (error.request) {
+      console.error("No response received:", error.request);
+      alert("No response from server.");
+    } else {
+      console.error("Request setup error:", error.message);
+      alert("Unexpected error: " + error.message);
+    }
+  }
+};
+
 
   return (
     <>
@@ -75,10 +97,10 @@ const handleSubmit = async (e) => {
             <div className="grid gap-4 mb-4 sm:grid-cols-2 sm:gap-6 sm:mb-5">
               <div className="sm:col-span-2">
                 <label
-                  htmlFor="title"
+                  for="judul"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
-                  Title
+                  Book Title
                 </label>
                 <input
                   type="text"
@@ -88,12 +110,12 @@ const handleSubmit = async (e) => {
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                   placeholder="Book Title"
-                  required
+                  required=""
                 />
               </div>
               <div className="w-full">
                 <label
-                  htmlFor="price"
+                  for="price"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Price
@@ -105,13 +127,13 @@ const handleSubmit = async (e) => {
                   value={formData.price}
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
-                  placeholder="e.g 15000"
-                  required
+                  placeholder="Book Price"
+                  required=""
                 />
               </div>
               <div className="w-full">
                 <label
-                  htmlFor="stock"
+                  for="stok"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Stock
@@ -123,68 +145,13 @@ const handleSubmit = async (e) => {
                   value={formData.stock}
                   onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
-                  placeholder="e.g. 10"
-                  required
-                />
-              </div>
-              <div className="w-full">
-                <label
-                  htmlFor="genre_id"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Genre ID
-                </label>
-                <input
-                  type="number"
-                  name="genre_id"
-                  id="genre_id"
-                  value={formData.genre_id}
-                  onChange={handleChange}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
-                  placeholder="e.g. 10"
-                  required
-                />
-              </div>
-              <div className="w-full">
-                <label
-                  htmlFor="author_id"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Author ID
-                </label>
-                <input
-                  type="number"
-                  name="author_id"
-                  id="author_id"
-                  value={formData.author_id}
-                  onChange={handleChange}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
-                  placeholder="e.g. 10"
-                  required
-                />
-              </div>
-
-              <div className="w-full">
-                <label
-                  htmlFor="cover_photo"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                >
-                  Cover Photo
-                </label>
-                <input
-                  type="file"
-                  name="cover_photo"
-                  id="cover_photo"
-                  accept="image/*"
-                  onChange={handleChange}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
-                  placeholder="e.g. 10"
-                  required
+                  placeholder="e.g. 15"
+                  required=""
                 />
               </div>
               <div>
                 <label
-                  htmlFor="genre_id"
+                  for="genre_id"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Genre
@@ -192,18 +159,19 @@ const handleSubmit = async (e) => {
                 <select
                   id="genre_id"
                   name="genre_id"
-                  defaultValue={""}
+                  value={formData.genre_id}
+                  onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                 >
                   <option value="">--select genre--</option>
-                  {genres.map((genre) =>(
-                    <option key={genre.id} value={genre.id}>{genre.name}</option>
+                  {genres.map((genre) => (
+                  <option key={genre.id} value={genre.id}>{genre.name}</option>
                   ))}
                 </select>
               </div>
               <div>
                 <label
-                  htmlFor="author_id"
+                  for="author_id"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Author
@@ -211,18 +179,35 @@ const handleSubmit = async (e) => {
                 <select
                   id="author_id"
                   name="author_id"
-                  defaultValue={""}
+                  value={formData.author_id}
+                  onChange={handleChange}
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
                 >
-                  <option value="">--select author--</option>
-                  {authors.map((author) =>(
-                    <option key={author.id} value={author.id}>{author.name}</option>
+                  <option value="">--select authors--</option>
+                  {authors.map((author) => (
+                  <option key={author.id} value={author.id}>{author.name}</option>
                   ))}
                 </select>
               </div>
+              <div className="w-full">
+                <label
+                  for="cover_photo"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
+                  Cover Photo
+                </label>
+                <input
+                  type="file"
+                  name="cover"
+                  id="cover"
+                  accept="image/*"
+                  onChange={handleChange}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-600 focus:border-indigo-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-indigo-500 dark:focus:border-indigo-500"
+                />
+              </div>
               <div className="sm:col-span-2">
                 <label
-                  htmlFor="description"
+                  for="deskripsi"
                   className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 >
                   Description
@@ -250,7 +235,19 @@ const handleSubmit = async (e) => {
                 type="reset"
                 className="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
               >
-                Delete
+                <svg
+                  className="w-5 h-5 mr-1 -ml-1"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                Reset
               </button>
             </div>
           </form>

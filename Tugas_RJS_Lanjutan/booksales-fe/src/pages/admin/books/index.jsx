@@ -134,11 +134,11 @@ export default function AdminBooks() {
                       scope="row"
                       className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     >
-                      {book.judul};
+                      {book.title};
                     </th>
-                    <td className="px-4 py-3">{book.harga}</td>
-                    <td className="px-4 py-3">{book.stok}</td>
-                    <td className="px-4 py-3">{book.cover_photo}</td>
+                    <td className="px-4 py-3">{book.price}</td>
+                    <td className="px-4 py-3">{book.stock}</td>
+                    <td className="px-4 py-3">{book.cover}</td>
                     <td className="px-4 py-3">{ getGenreName(book.genre_id) }</td>
                     <td className="px-4 py-3">{ getAuthorName(book.author_id) }</td>
                     <td className="px-4 py-3 flex items-center justify-end relative">

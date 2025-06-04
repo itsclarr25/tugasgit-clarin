@@ -1,9 +1,9 @@
 import API from "../_api"
+import axios from "axios";
 
 
 export const getAuthors = async () => {
-    const {data} = await API.get("/authors")
-    return data.data
-}
-
+  const response = await axios.get("http://localhost:8000/api/authors");
+  return response.data.data;
+};
 
